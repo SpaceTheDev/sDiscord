@@ -1,0 +1,8 @@
+{
+  "name": "sDiscord",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "dependencies": {
+    "ws": "7.3.1"
+  }
+}
