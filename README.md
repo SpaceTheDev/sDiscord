@@ -15,7 +15,7 @@ A discord helper resource used to get discord member information in game
 
 ### getUserRoles
 
-The getUserData export takes a discord id, user, and a guild id, guild. The guild id is optional. It returns two values completed and the data. Completed with either be true or false and data with either be the a error message or the user's roles.
+The getUserData export takes a discord id, user, and a guild id, guild. The guild id is optional. It returns two values, completed and the data. Completed with either be true or false and data with either be the a error message or the user's roles.
 
 #### Example Usage (getUserRoles)
 
@@ -33,7 +33,7 @@ end)
 
 ### getUserData
 
-getUserData takes a discord id, user, and a guild id, guild. The guild id is optional. It returns two values completed and the data. Completed with either be true or false and data with either be the a error message or the user's user object.
+getUserData takes a discord id, user, and a guild id, guild. The guild id is optional. It returns two values, completed and the data. Completed with either be true or false and data with either be the a error message or the user's user object.
 
 #### Example Usage (getUserData)
 
