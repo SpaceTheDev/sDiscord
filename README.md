@@ -9,6 +9,7 @@ A discord helper resource used to get discord member information in game
 - Clone or download resource into your `resources` folder
 - Install dependencies using `npm i`
 - Add your bot token and guild id to the config.json
+- Add `sDiscord` to your server.cfg
 
 ## Exports
 
