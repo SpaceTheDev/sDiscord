@@ -1,7 +1,6 @@
 const Events = require('events');
 const config = require('../config.json');
 const WebSocket = require('ws');
-const Intents = require('./intents');
 
 class DiscordWebSocket extends Events.EventEmitter {
   constructor(token, guild) {
@@ -14,10 +13,11 @@ class DiscordWebSocket extends Events.EventEmitter {
       client: {},
     };
     // should use the /gateway endpoint to get this, but /shrug
-    this._ws = new WebSocket('wss://gateway.discord.gg/?v=8&encoding=json');
+    this._ws = new WebSocket('wss://gateway.discord.gg/?v=6&encoding=json');
 
     // handle the ws message events
     this._ws.on('message', (e) => this._messageHandler(e));
+    this._ws.on('close', console.log)
   }
 
   // identify to the gateway or resume the connection
@@ -34,19 +34,15 @@ class DiscordWebSocket extends Events.EventEmitter {
         },
       };
     } else {
-      // define the intents (in the future if I do more this will change)
-      let intents = Intents.GUILD_MEMBERS;
-
       payload = {
         op: 2,
         d: {
           token: this._internal.bot.token,
           properties: {
             $os: require('os').platform(),
-            $browser: 'ssrp',
-            $device: 'ssrp',
+            $browser: 'sDiscord',
+            $device: 'sDiscord',
           },
-          intents,
         },
       };
     }
@@ -55,7 +51,6 @@ class DiscordWebSocket extends Events.EventEmitter {
 
   _messageHandler(e) {
     const data = JSON.parse(e);
-
     switch (data.op) {
       case 0:
         this._internal.client.s = data.s;
@@ -93,6 +88,7 @@ class DiscordWebSocket extends Events.EventEmitter {
 
     switch (data.t) {
       case 'READY':
+        this._internal.client.session_id = data.d.session_id
         break;
       case 'GUILD_MEMBER_UPDATE':
         if (data.d.guild_id == config.bot.guild) {
