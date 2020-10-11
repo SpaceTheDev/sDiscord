@@ -27,9 +27,9 @@ exports('getUserRoles', ({ user, guild }, cb) => {
   const guildId = guild ? guild : config.bot.guild
   try {
     const roles = structureMember(bot.guilds.get(guildId).members.get(user)).roles
-    cb({completed: true, data: roles})
+    cb(true, roles)
   } catch (err) {
-    cb({ completed: false, data: err.message })
+    cb(false, err.message)
   }
 });
 
@@ -37,9 +37,9 @@ exports('getUserData', ({ user, guild }, cb) => {
   const guildId = guild ? guild : config.bot.guild
   try {
     const guildMember = structureMember(bot.guilds.get(guildId).members.get(user))
-    cb({completed: true, data: guildMember})
+    cb(true, guildMember)
   } catch (err) {
-    cb({ completed: false, data: err.message })
+    cb(false, err.message)
   }
 });
 
