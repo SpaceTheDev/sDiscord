@@ -1,8 +1,8 @@
 {
   "name": "sDiscord",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "src/server.js",
   "dependencies": {
-    "ws": "7.3.1"
+    "discord.js": "git+https://github.com/vecchiotom/discord.js.git#d9e8619353e60e02619c48745356b0511050d22d"
   }
 }

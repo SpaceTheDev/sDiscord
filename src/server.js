@@ -1,62 +1,46 @@
-const https = require('https');
-const { DiscordWebSocket } = require('./src/ws');
+const { Client } = require('discord.js')
+const bot = new Client()
 const config = require('./src/config.json');
 
-const discordWS = new DiscordWebSocket(config.bot.token, config.bot.guild);
+bot.on('ready', () => {
+  console.log(`[sDiscord]: Ready`)
+})
 
-discordWS.on('guildMemberUpdate', (data) => {
-  emit('sDiscord:guildMemberUpdate', data);
-});
+function structureMember(m) {
+  const { id, username, discriminator } = m.user
+  let roles = []
 
-function getMember(clientId, { guild }) {
-  return new Promise((resolve, reject) => {
-    https
-      .request(
-        {
-          hostname: 'discord.com',
-          port: 443,
-          path: `/api/v6/guilds/${guild ? guild : config.bot.guild}/members/${clientId}`,
-          method: 'GET',
-          headers: {
-            Authorization: `Bot ${config.bot.token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-        (res) => {
-          let chunks = [];
-          res.on('data', (chunk) => {
-            chunks.push(chunk);
-          });
+  m.roles.map(role => {
+    if (role.guild == config.bot.guild) {
+      roles.push(role.id)
+    }
+  })
 
-          res.on('end', () => {
-            let data = JSON.parse(Buffer.concat(chunks).toString());
-            resolve(data);
-          });
-        }
-      )
-      .on('error', (e) => {
-        reject(e.message);
-      })
-      .end();
-  });
+  return { id, username, discriminator, roles }
 }
 
+bot.on('guildMemberUpdate', (m) => {
+  emit('sDiscord:guildMemberUpdate', structureMember(m))
+})
+
 exports('getUserRoles', ({ user, guild }, cb) => {
-  getMember(user, { guild })
-    .then((res) => {
-      cb(true, res.roles);
-    })
-    .catch((err) => {
-      cb(false, err.message);
-    });
+  const guildId = guild ? guild : config.bot.guild
+  try {
+    const roles = structureMember(bot.guilds.get(guildId).members.get(user)).roles
+    cb({completed: true, data: roles})
+  } catch (err) {
+    cb({ completed: false, data: err.message })
+  }
 });
 
 exports('getUserData', ({ user, guild }, cb) => {
-  getMember(user, { guild })
-    .then((res) => {
-      cb(true, res);
-    })
-    .catch((err) => {
-      cb(false, err.message);
-    });
+  const guildId = guild ? guild : config.bot.guild
+  try {
+    const guildMember = structureMember(bot.guilds.get(guildId).members.get(user))
+    cb({completed: true, data: guildMember})
+  } catch (err) {
+    cb({ completed: false, data: err.message })
+  }
 });
+
+bot.login(config.bot.token)

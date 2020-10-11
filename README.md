@@ -1,6 +1,6 @@
 # sDiscord
 
-A discord helper resource used to get discord member information in game
+A discord helper resource used to get discord member information in game. I wanted to avoid using Discord.js, but dealing with discord's gateway is a pain in the ass, so here we are.
 
 ---
 
