@@ -3,6 +3,6 @@
   "version": "2.0.0",
   "main": "src/server.js",
   "dependencies": {
-    "discord.js": "git+https://github.com/discordjs/discord.js/"
+    "discord.js": "git+https://github.com/discordjs/discord.js.git"
   }
 }
