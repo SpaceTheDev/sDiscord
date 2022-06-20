@@ -1,46 +1,51 @@
-const { Client } = require('discord.js')
-const bot = new Client()
-const config = require('./src/config.json');
+const { Client } = require("discord.js");
+const bot = new Client({ intents: ["GUILDS", "GUILD_MEMBERS"], partials: ["USER", "GUILD_MEMBER"] });
+const config = require("./src/config.json");
 
-bot.on('ready', () => {
-  console.log(`[sDiscord]: Ready`)
-})
+bot.on("ready", () => {
+  console.log(`[sDiscord]: Ready`);
+});
 
 function structureMember(m) {
-  const { id, username, discriminator } = m.user
-  let roles = []
+  const { id, username, discriminator } = m.user;
+  let roles = [];
 
-  m.roles.map(role => {
-    if (role.guild == config.bot.guild) {
-      roles.push(role.id)
-    }
-  })
+  m.roles.cache.toJSON().forEach((role) => {
+    if (role.name === "@everyone") return;
+    roles.push(role.id);
+  });
 
-  return { id, username, discriminator, roles }
+  return { id, username, discriminator, roles };
 }
 
-bot.on('guildMemberUpdate', (m) => {
-  emit('sDiscord:guildMemberUpdate', structureMember(m))
-})
+bot.on("guildMemberUpdate", (_, m) => {
+  emit("sDiscord:guildMemberUpdate", structureMember(m));
+});
 
-exports('getUserRoles', ({ user, guild }, cb) => {
-  const guildId = guild ? guild : config.bot.guild
+exports("getUserRoles", async ({ user, guild }, cb) => {
+  const guildId = guild ? guild : config.bot.guild;
   try {
-    const roles = structureMember(bot.guilds.get(guildId).members.get(user)).roles
-    cb(true, roles)
+    const guild = await bot.guilds.fetch(guildId);
+    const guildMember = await guild.members.fetch(user);
+    const roles = structureMember(guildMember).roles;
+
+    cb(true, roles);
   } catch (err) {
-    cb(false, err.message)
+    cb(false, err.message);
   }
 });
 
-exports('getUserData', ({ user, guild }, cb) => {
-  const guildId = guild ? guild : config.bot.guild
+exports("getUserData", async ({ user, guild }, cb) => {
+  const guildId = guild ? guild : config.bot.guild;
   try {
-    const guildMember = structureMember(bot.guilds.get(guildId).members.get(user))
-    cb(true, guildMember)
+    const guild = await bot.guilds.fetch(guildId);
+    const guildMember = await guild.members.fetch(user);
+    const structuredMember = structureMember(guildMember);
+
+    cb(true, structuredMember);
   } catch (err) {
-    cb(false, err.message)
+    cb(false, err.message);
   }
 });
 
-bot.login(config.bot.token)
+bot.login(config.bot.token);
